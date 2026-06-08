@@ -154,6 +154,8 @@
   details.help div { color: var(--muted); font-size: 12.5px; padding: 8px 0 0; }
   code.k { font-family: var(--mono); background: var(--panel-2); padding: 1px 5px; border-radius: 4px; font-size: 12px; }
   .lang-btn { font-size: 12px; padding: 5px 10px; border-radius: 20px; min-width: 52px; }
+  .about-link { color: var(--accent); text-decoration: none; font-weight: 500; transition: color .12s; }
+  .about-link:hover { color: #4f7df0; text-decoration: underline; }
   @media (max-width: 1100px) { .layout { grid-template-columns: 200px 1fr; } aside.preview { display:none; } }
 </style>
 </head>
@@ -218,6 +220,7 @@ const I18N = {
     navAds: "Ads",
     navMessages: "Messages",
     navLogging: "Logging",
+    navAbout: "About",
 
     // general
     generalTitle: "General",
@@ -324,6 +327,10 @@ const I18N = {
     streamLog: "Stream chunks",
     userDictLog: "Log full user dict (includes email)",
 
+    // about
+    aboutTitle: "About Bouncer",
+    aboutDesc: "Enterprise-grade access control and rate limiting filter for Open WebUI.",
+
     // toasts / prompts
     invalidJson: "Invalid JSON: ",
     configRootError: "Config root must be an object",
@@ -356,6 +363,7 @@ const I18N = {
     navAds: "广告",
     navMessages: "消息",
     navLogging: "日志",
+    navAbout: "关于项目",
 
     // general
     generalTitle: "常规",
@@ -461,6 +469,10 @@ const I18N = {
     outletLog: "出站（响应）",
     streamLog: "流式块",
     userDictLog: "记录完整用户字典（含邮件）",
+
+    // about
+    aboutTitle: "关于 Bouncer",
+    aboutDesc: "专为 Open WebUI 打造的高性能访问控制与多级速率限制组件。",
 
     // toasts / prompts
     invalidJson: "无效 JSON：",
@@ -610,6 +622,7 @@ const SECTIONS = [
   { id: "ads",      labelKey: "navAds",      count: () => config.ads.content.length || null },
   { id: "messages", labelKey: "navMessages", count: () => null },
   { id: "logging",  labelKey: "navLogging",  count: () => null },
+  { id: "about",    labelKey: "navAbout",    count: () => null },
 ];
 
 function bindToggle(obj, key, labelKey, hintKey) {
@@ -943,9 +956,29 @@ function renderLogging() {
   ];
 }
 
+/* ---------- About ---------- */
+function renderAbout() {
+  return [
+    el("h1", { class: "sec-title" }, t("aboutTitle")),
+    el("p", { class: "sec-desc" }, t("aboutDesc")),
+    el("div", { class: "card" },
+      el("h4", {}, lang === "zh" ? "项目生态" : "Ecosystem"),
+      el("p", {}, lang === "zh" ? "Bouncer 是一个专为 Open WebUI 设计的工业级网关管理过滤器，通过精细的规则拦截不合规的请求。" : "Bouncer is an enterprise-grade gateway filter crafted for Open WebUI, safeguarding your upstream endpoints with rule-based interception."),
+      el("p", { style: "margin-top: 16px;" }, 
+        el("strong", {}, "GitHub Repository: "),
+        el("a", { class: "about-link", href: "https://github.com/OnyxAxisOwO/Bouncer", target: "_blank" }, "OnyxAxisOwO/Bouncer")
+      ),
+      el("p", {}, 
+        el("strong", {}, "Official Generator: "),
+        el("a", { class: "about-link", href: "https://bouncer-webui.pages.dev", target: "_blank" }, "bouncer-webui.pages.dev")
+      )
+    )
+  ];
+}
+
 const RENDERERS = {
   general: renderGeneral, auth: renderAuth, models: renderModels, users: renderUsers,
-  fallback: renderFallback, bans: renderBans, ads: renderAds, messages: renderMessages, logging: renderLogging
+  fallback: renderFallback, bans: renderBans, ads: renderAds, messages: renderMessages, logging: renderLogging, about: renderAbout
 };
 
 /* ============================================================

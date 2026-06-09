@@ -1,7 +1,7 @@
 """
 title: Bouncer
-version: 0.3.0
-author: Open WebUI Community
+version: 0.3.1
+author: Open WebUI Community (Modified)
 description: 访问控制与频率限制过滤器。支持基于模型分组的差异化广告投放、白名单及多级流控。
 license: MIT
 """
@@ -56,17 +56,6 @@ class Filter:
         "enabled": true,
         "content": [
           "欢迎使用 Bouncer 访问控制插件！[基础组公告栏]"
-        ]
-      }
-    },
-    {
-      "id": "premium",
-      "name": "高级模型组",
-      "models": ["gpt-4o", "claude-3-5-sonnet"],
-      "ads": {
-        "enabled": true,
-        "content": [
-          "您正在使用高级模型，请注意额度消耗。[高级组公告栏]"
         ]
       }
     }
@@ -145,7 +134,6 @@ class Filter:
                 u[k] = "<omitted>"
         return u
 
-    # 💡 严格遵循 Open WebUI 官方规范命名，未做任何改动
     async def inlet(
         self,
         body: dict,
@@ -155,12 +143,20 @@ class Filter:
         print("\n=== BOUNCER RUNNING ===")
         cfg = self.get_cfg()
 
+        # 1. 全局开关检查
         if not cfg.get("base", {}).get("enabled", True):
             print("BOUNCER DISABLED GLOBAL")
             return body
 
         if not __user__:
             print("🚨 错误: 仍然未能获取到用户上下文")
+            return body
+
+        # 💡 新增：管理员豁免逻辑
+        user_role = __user__.get("role", "user")
+        admin_effective = cfg.get("base", {}).get("admin_effective", True)
+        if user_role == "admin" and not admin_effective:
+            print("👑 管理员触发豁免：Bouncer 过滤器已跳过")
             return body
 
         user_id = __user__.get("id", "unknown")
